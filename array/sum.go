@@ -33,3 +33,13 @@ func SumAll(numbersToSum ...[]int) (sums []int) {
 	}
 	return
 }
+
+func SumAllTails(numbersToSum ...[]int) (sums []int) {
+	for _, numbers := range numbersToSum {
+
+		//[1:] 取得切片从1到末尾的部分切片 slice[low, high]
+		tail := numbers[1:]
+		sums = append(sums, Sum(tail))
+	}
+	return
+}
