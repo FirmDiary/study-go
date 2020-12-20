@@ -1,1 +1,1 @@
-## Record some note and code about golang when i learn 🙇
+## Record some note and code about golang when I learn 🙇
