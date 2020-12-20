@@ -14,14 +14,22 @@ func Sum(numbers []int) (sum int) {
 	return sum
 }
 
+//func SumAll(numbersToSum ...[]int) (sums []int) {
+//	lengthOfNumbers := len(numbersToSum)
+//
+//	//make 可以在创建切片的时候指定我们需要的长度和容量。
+//	sums = make([]int, lengthOfNumbers)
+//
+//	for i, numbers := range numbersToSum {
+//		sums[i] = Sum(numbers)
+//	}
+//	return
+//}
+
 func SumAll(numbersToSum ...[]int) (sums []int) {
-	lengthOfNumbers := len(numbersToSum)
-
-	//make 可以在创建切片的时候指定我们需要的长度和容量。
-	sums = make([]int, lengthOfNumbers)
-
-	for i, numbers := range numbersToSum {
-		sums[i] = Sum(numbers)
+	for _, numbers := range numbersToSum {
+		//append 函数，它能为切片追加一个新值。
+		sums = append(sums, Sum(numbers))
 	}
 	return
 }
