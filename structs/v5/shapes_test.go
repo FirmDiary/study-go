@@ -19,7 +19,7 @@ func TestArea(t *testing.T) {
 		shape   Shape
 		hasArea float64
 	}{
-		{name: "Rectangle", shape: Rectangle{12, 6}, hasArea: 36.0},
+		{name: "Rectangle", shape: Rectangle{12, 6}, hasArea: 37.0},
 		{name: "Circle", shape: Circle{10}, hasArea: 314.1592653589793},
 		{name: "Triangle", shape: Triangle{12, 6}, hasArea: 36.0},
 	}
@@ -28,7 +28,7 @@ func TestArea(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			got := tt.shape.Area()
 			if got != tt.hasArea {
-				t.Errorf("got %.2f want %.2f", got, tt.hasArea)
+				t.Errorf("%#v got %.2f want %.2f", tt.shape, got, tt.hasArea)
 			}
 		})
 	}
