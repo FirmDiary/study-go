@@ -17,6 +17,22 @@ type PlayerServer struct {
 	store PlayerStore
 }
 
+func (p *PlayerServer) showScore(w http.ResponseWriter, player string) {
+
+	score := p.store.GetPlayerScore(player)
+
+	if score == 0 {
+		w.WriteHeader(http.StatusNotFound)
+	}
+
+	fmt.Fprint(w, score)
+}
+
+func (p *PlayerServer) processWin(w http.ResponseWriter, player string) {
+	p.store.RecordWin(player)
+	w.WriteHeader(http.StatusAccepted)
+}
+
 func NewInMemoryPlayerStore() *InMemoryPlayerStore {
 	return &InMemoryPlayerStore{map[string]int{}}
 }
@@ -45,26 +61,4 @@ func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	case http.MethodGet:
 		p.showScore(w, player)
 	}
-
-	if r.Method == http.MethodPost {
-
-		return
-	}
-
-}
-
-func (p *PlayerServer) showScore(w http.ResponseWriter, player string) {
-
-	score := p.store.GetPlayerScore(player)
-
-	if score == 0 {
-		w.WriteHeader(http.StatusNotFound)
-	}
-
-	fmt.Fprint(w, score)
-}
-
-func (p *PlayerServer) processWin(w http.ResponseWriter, player string) {
-	p.store.RecordWin(player)
-	w.WriteHeader(http.StatusAccepted)
 }
