@@ -3,19 +3,27 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"strings"
 )
 
+// PlayerStore stores score information about players.
 type PlayerStore interface {
 	GetPlayerScore(name string) int
 }
 
+// PlayerServer is a HTTP interface for player information.
 type PlayerServer struct {
 	store PlayerStore
 }
 
 func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	//r.URL.Path 返回请求的路径，然后我们用切片语法得到 /players/ 最后的斜杠后的路径
-	player := r.URL.Path[len("/players/"):]
+	player := strings.TrimPrefix(r.URL.Path, "/players/")
 
-	fmt.Fprint(w, p.store.GetPlayerScore(player))
+	score := p.store.GetPlayerScore(player)
+
+	if score == 0 {
+		w.WriteHeader(http.StatusNotFound)
+	}
+
+	fmt.Fprint(w, score)
 }
