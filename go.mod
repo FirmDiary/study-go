@@ -1,3 +1,3 @@
-module example.com/m
+module main
 
 go 1.15
