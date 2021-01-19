@@ -97,4 +97,33 @@ START:
 	//for i := 0; ; i++ {
 	//	fmt.Println("Value of i is now:", i)
 	//}
+
+	fmt.Println()
+	//使用标签
+	//for、switch 或 select 语句都可以配合标签（label）形式的标识符使用，
+	//即某一行第一个以冒号（:）结尾的单词
+LABEL1:
+	for i := 0; i <= 5; i++ {
+		for j := 0; j <= 5; j++ {
+			if j == 4 {
+				//continue 语句指向 LABEL1，当执行到该语句的时候，就会跳转到 LABEL1 标签的位置
+				//通过continue 某个标签，达到跳出外层循环
+				//如果直接使用continue，就会只跳出内层循环
+				//如果直接使用break，就会终止所有循环了
+				continue LABEL1
+			}
+			fmt.Printf("i is: %d, and j is: %d\n", i, j)
+		}
+	}
+
+	//使用goto加上标签可以模拟for循环
+	//但是这是不被鼓励的,用for将会更加方便
+	i4 := 0
+HERE:
+	print(i4)
+	i4++
+	if i4 == 5 {
+		return
+	}
+	goto HERE
 }
