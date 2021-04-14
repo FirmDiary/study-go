@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"net/http"
 )
@@ -12,18 +13,23 @@ URL: <input type="text" name="url">
 </form>
 `
 
-var store = NewURLStore("store.gob")
+var store *URLStore
 
 func main() {
+	flag.Parse()
+
+	store = NewURLStore(*dataFile)
+
 	http.HandleFunc("/", Redirect)
 	http.HandleFunc("/add", Add)
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(*listenAddr, nil)
 }
 
 func Redirect(w http.ResponseWriter, r *http.Request) {
 	key := r.URL.Path[1:]
 	url := store.Get(key)
 	if url == "" {
+
 		http.NotFound(w, r)
 		return
 	}
@@ -38,5 +44,5 @@ func Add(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	key := store.Put(url)
-	fmt.Fprintf(w, "http://localhost:8080/%s", key)
+	fmt.Fprintf(w, "http://%s/%s", *hostname, key)
 }
