@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"net/http"
+	"net/rpc"
 )
 
 const AddForm = `
@@ -13,13 +14,22 @@ URL: <input type="text" name="url">
 </form>
 `
 
-var store *URLStore
+var store Store
 
 func main() {
 	flag.Parse()
 
-	store = NewURLStore(*dataFile)
+	if *masterAddr != "" { // 如果主服务器地址不为空，我们是一个从服务器
+		store = NewProxyStore(*masterAddr)
+	} else {
+		//我们是主服务器
+		store = NewURLStore(*dataFile)
+	}
 
+	if *rpcEnabled { // the master is the rpc server:
+		rpc.RegisterName("Store", store)
+		rpc.HandleHTTP()
+	}
 	http.HandleFunc("/", Redirect)
 	http.HandleFunc("/add", Add)
 	http.ListenAndServe(*listenAddr, nil)
@@ -27,10 +37,9 @@ func main() {
 
 func Redirect(w http.ResponseWriter, r *http.Request) {
 	key := r.URL.Path[1:]
-	url := store.Get(key)
-	if url == "" {
-
-		http.NotFound(w, r)
+	var url string
+	if err := store.Get(&key, &url); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	http.Redirect(w, r, url, http.StatusFound)
@@ -43,6 +52,12 @@ func Add(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, AddForm)
 		return
 	}
-	key := store.Put(url)
+	var key string
+
+	if err := store.Put(&url, &key); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	fmt.Fprintf(w, "http://%s/%s", *hostname, key)
 }
