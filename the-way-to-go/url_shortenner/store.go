@@ -1,7 +1,7 @@
 package main
 
 import (
-	"encoding/gob"
+	"encoding/json"
 	"flag"
 	"io"
 	"log"
@@ -11,7 +11,7 @@ import (
 
 var (
 	listenAddr = flag.String("http", ":8080", "http listen address")
-	dataFile   = flag.String("file", "store.gob", "data store file name")
+	dataFile   = flag.String("file", "store.json", "data store file name")
 	hostname   = flag.String("host", "localhost:8080", "host name and port")
 )
 
@@ -50,7 +50,7 @@ func (s *URLStore) saveLoop(filename string) {
 	}
 	defer f.Close()
 
-	e := gob.NewEncoder(f)
+	e := json.NewEncoder(f)
 
 	for {
 		r := <-s.save
@@ -69,7 +69,7 @@ func (s *URLStore) load(filename string) error {
 		return err
 	}
 	defer f.Close()
-	d := gob.NewDecoder(f)
+	d := json.NewDecoder(f)
 	for err == nil {
 		var r record
 		if err = d.Decode(&r); err == nil {
